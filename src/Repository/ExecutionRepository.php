@@ -51,7 +51,7 @@ class ExecutionRepository extends ServiceEntityRepository
                 WITH it.instrument = e.instrument
                 AND it.date = (SELECT MAX(it2.date) FROM App\Entity\InstrumentTerms it2 WHERE it2.instrument = e.instrument)
             WHERE a.owner = :user
-            GROUP BY e.instrument
+            GROUP BY e.instrument,i.id,a.id,asset.id,ap.close,it.ratio
         SQL;
 
         if (!$show_empty)
@@ -104,7 +104,7 @@ class ExecutionRepository extends ServiceEntityRepository
             ->innerJoin('App\Entity\Asset', 'asset', Join::WITH, 'asset.id = i.underlying')
             ->where('t.account = :account')
             ->setParameter('account', $account)
-            ->groupBy('e.instrument');
+            ->groupBy('e.instrument,i.id,asset.id');
         
         if (!$show_empty)
         {
